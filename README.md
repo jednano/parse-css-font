@@ -32,7 +32,7 @@ parseCssFont('1rem "Roboto Condensed", sans-serif;');
 */
 ```
 
-See [the tests](https://github.com/jedmao/parse-css-font/tree/master/test) for more scenarios.
+See [the tests](https://github.com/jedmao/parse-css-font/blob/master/test/index.js) for more scenarios.
 
 ## Testing
 
