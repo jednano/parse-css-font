@@ -1,0 +1,41 @@
+{
+  "name": "parse-css-font",
+  "version": "1.0.0",
+  "description": "Parse the CSS font property value.",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run cover && npm run check-coverage",
+    "cover": "istanbul cover test/index.js",
+    "check-coverage": "istanbul check-coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jedmao/parse-css-font.git"
+  },
+  "keywords": [
+    "css",
+    "parse",
+    "font",
+    "shorthand"
+  ],
+  "author": "Jed Mao <jedmao@outlook.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jedmao/parse-css-font/issues"
+  },
+  "homepage": "https://github.com/jedmao/parse-css-font#readme",
+  "dependencies": {
+    "css-font-size-keywords": "^1.0.0",
+    "css-font-stretches": "^1.0.1",
+    "css-font-styles": "^1.0.0",
+    "css-font-weights": "^1.0.0",
+    "css-global-values": "^1.0.0",
+    "css-system-fonts": "0.0.1",
+    "tcomb": "^2.5.0",
+    "unquote": "^1.1.0"
+  },
+  "devDependencies": {
+    "istanbul": "^0.3.21",
+    "tape": "^4.2.0"
+  }
+}

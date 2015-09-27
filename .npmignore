@@ -1,0 +1,4 @@
+.*
+test/
+gulpfile.babel.js
+jsconfig.json
