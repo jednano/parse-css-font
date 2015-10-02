@@ -1,10 +1,10 @@
 ﻿var t = require('tcomb');
 var unquote = require('unquote');
-var cssGlobalValues = require('css-global-values');
-var cssSystemFonts = require('css-system-fonts');
-var cssFontWeights = require('css-font-weights');
-var cssFontStyles = require('css-font-styles');
-var cssFontStretches = require('css-font-stretches');
+var globalKeywords = require('css-global-keywords');
+var systemFontKeywords = require('css-system-font-keywords');
+var fontWeightKeywords = require('css-font-weight-keywords');
+var fontStyleKeywords = require('css-font-style-keywords');
+var fontStretchKeywords = require('css-font-stretch-keywords');
 var cssListHelpers = require('css-list-helpers');
 
 var helpers = require('./lib/helpers');
@@ -32,7 +32,7 @@ module.exports = t.func(t.String, t.Object).of(
 			throw error('Cannot parse an empty string.');
 		}
 
-		if (cssSystemFonts().indexOf(value) !== -1) {
+		if (systemFontKeywords.indexOf(value) !== -1) {
 			return SystemFont({ system: value });
 		}
 
@@ -49,7 +49,7 @@ module.exports = t.func(t.String, t.Object).of(
 		var token = tokens.shift();
 		for (; !t.Nil.is(token); token = tokens.shift()) {
 
-			if (token === 'normal' || cssGlobalValues.indexOf(token) !== -1) {
+			if (token === 'normal' || globalKeywords.indexOf(token) !== -1) {
 				['style', 'variant', 'weight', 'stretch'].forEach(function(prop) {
 					font[prop] = token;
 				});
@@ -57,7 +57,7 @@ module.exports = t.func(t.String, t.Object).of(
 				continue;
 			}
 
-			if (cssFontWeights.indexOf(token) !== -1) {
+			if (fontWeightKeywords.indexOf(token) !== -1) {
 				if (isLocked) {
 					continue;
 				}
@@ -65,7 +65,7 @@ module.exports = t.func(t.String, t.Object).of(
 				continue;
 			}
 
-			if (cssFontStyles.indexOf(token) !== -1) {
+			if (fontStyleKeywords.indexOf(token) !== -1) {
 				if (isLocked) {
 					continue;
 				}
@@ -73,7 +73,7 @@ module.exports = t.func(t.String, t.Object).of(
 				continue;
 			}
 
-			if (cssFontStretches.indexOf(token) !== -1) {
+			if (fontStretchKeywords.indexOf(token) !== -1) {
 				if (isLocked) {
 					continue;
 				}

@@ -1,3 +1,6 @@
+## 2.0.2
+- Update dependencies.
+
 ## 2.0.1
 - Fix issue w/ slashes in functions.
 

@@ -1,9 +1,9 @@
 ﻿var tape = require('tape');
-var cssGlobalValues = require('css-global-values');
-var cssSystemFonts = require('css-system-fonts');
-var cssFontWeights = require('css-font-weights');
-var cssFontStyles = require('css-font-styles');
-var cssFontStretches = require('css-font-stretches');
+var globalKeywords = require('css-global-keywords');
+var systemFontKeywords = require('css-system-font-keywords');
+var fontWeightKeywords = require('css-font-weight-keywords');
+var fontStyleKeywords = require('css-font-style-keywords');
+var fontStretchKeywords = require('css-font-stretch-keywords');
 
 var parse = require('..');
 
@@ -33,7 +33,7 @@ tape('parse-css-font', function(t) {
 		'throws when the font-family is missing'
 	);
 
-	cssSystemFonts().forEach(function(systemFont) {
+	systemFontKeywords.forEach(function(systemFont) {
 		t.deepEqual(
 			parse(systemFont),
 			{ system: systemFont },
@@ -92,7 +92,7 @@ tape('parse-css-font', function(t) {
 		'preserves functions with slashes inside'
 	);
 
-	cssFontWeights.forEach(function(weight) {
+	fontWeightKeywords.forEach(function(weight) {
 		compare(t,
 			parse(weight + ' 1rem serif'),
 			{ weight: weight },
@@ -100,7 +100,7 @@ tape('parse-css-font', function(t) {
 		);
 	});
 
-	cssFontStyles.forEach(function(style) {
+	fontStyleKeywords.forEach(function(style) {
 		compare(t,
 			parse(style + ' 1rem serif'),
 			{ style: style },
@@ -108,7 +108,7 @@ tape('parse-css-font', function(t) {
 		);
 	});
 
-	cssFontStretches.forEach(function(stretch) {
+	fontStretchKeywords.forEach(function(stretch) {
 		compare(t,
 			parse(stretch + ' 1rem serif'),
 			{ stretch: stretch },
@@ -163,7 +163,7 @@ tape('parse-css-font', function(t) {
 		'overrides all props before size with normal when one prop is normal'
 	);
 
-	cssGlobalValues.forEach(function(value) {
+	globalKeywords.forEach(function(value) {
 		t.deepEqual(
 			parse('italic ' + value + ' 500 condensed 1rem/1.2 serif'),
 			{
