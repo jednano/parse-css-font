@@ -5,6 +5,7 @@ var cssSystemFonts = require('css-system-fonts');
 var cssFontWeights = require('css-font-weights');
 var cssFontStyles = require('css-font-styles');
 var cssFontStretches = require('css-font-stretches');
+var cssListHelpers = require('css-list-helpers');
 
 var helpers = require('./lib/helpers');
 
@@ -44,7 +45,7 @@ module.exports = t.func(t.String, t.Object).of(
 		};
 
 		var isLocked = false;
-		var tokens = value.split(/\s+/);
+		var tokens = cssListHelpers.splitBySpaces(value);
 		var token = tokens.shift();
 		for (; !t.Nil.is(token); token = tokens.shift()) {
 
@@ -89,7 +90,7 @@ module.exports = t.func(t.String, t.Object).of(
 				if (!tokens.length) {
 					throw error('Missing required font-family.');
 				}
-				font.family = tokens.join(' ').split(/\s*,\s*/).map(unquote);
+				font.family = cssListHelpers.splitByCommas(tokens.join(' ')).map(unquote);
 				return Font(font);
 			}
 

@@ -74,6 +74,14 @@ tape('parse-css-font', function(t) {
 		'unquotes each font-family'
 	);
 
+	compare(t,
+		parse('1rem/fn(x, y, z) serif'),
+		{
+			lineHeight: 'fn(x, y, z)'
+		},
+		'preserves functions with spaces and commas inside'
+	);
+
 	cssFontWeights.forEach(function(weight) {
 		compare(t,
 			parse(weight + ' 1rem serif'),

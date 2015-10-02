@@ -1,6 +1,6 @@
 {
   "name": "parse-css-font",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Parse the CSS font property value.",
   "main": "index.js",
   "scripts": {
@@ -30,6 +30,7 @@
     "css-font-styles": "^1.0.0",
     "css-font-weights": "^1.0.0",
     "css-global-values": "^1.0.0",
+    "css-list-helpers": "^1.0.0",
     "css-system-fonts": "0.0.1",
     "tcomb": "^2.5.0",
     "unquote": "^1.1.0"

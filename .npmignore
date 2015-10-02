@@ -1,4 +1,5 @@
 .*
+coverage/
 test/
 gulpfile.babel.js
 jsconfig.json
