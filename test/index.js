@@ -75,11 +75,21 @@ tape('parse-css-font', function(t) {
 	);
 
 	compare(t,
-		parse('1rem/fn(x, y, z) serif'),
+		parse('fn(a, b, c)/fn(x, y, z) serif'),
 		{
+			size: 'fn(a, b, c)',
 			lineHeight: 'fn(x, y, z)'
 		},
 		'preserves functions with spaces and commas inside'
+	);
+
+	compare(t,
+		parse('fn(a / b / c)/fn(x / y / z) serif'),
+		{
+			size: 'fn(a / b / c)',
+			lineHeight: 'fn(x / y / z)'
+		},
+		'preserves functions with slashes inside'
 	);
 
 	cssFontWeights.forEach(function(weight) {

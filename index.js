@@ -82,7 +82,7 @@ module.exports = t.func(t.String, t.Object).of(
 			}
 
 			if (helpers.isSize(token)) {
-				var parts = token.split('/');
+				var parts = cssListHelpers.split(token, ['/']);
 				font.size = parts[0];
 				if (!t.Nil.is(parts[1])) {
 					font.lineHeight = parseLineHeight(parts[1]);
