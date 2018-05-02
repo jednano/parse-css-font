@@ -1,4 +1,6 @@
-﻿var tape = require('tape');
+﻿'use strict'
+
+var tape = require('tape');
 var globalKeywords = require('css-global-keywords');
 var systemFontKeywords = require('css-system-font-keywords');
 var fontWeightKeywords = require('css-font-weight-keywords');
@@ -8,13 +10,20 @@ var fontStretchKeywords = require('css-font-stretch-keywords');
 var parse = require('..');
 
 tape('parse-css-font', function(t) {
-
 	t.throws(
 		function() {
 			parse('');
 		},
 		/Cannot parse an empty string/,
 		'throws when attempting to parse an empty string'
+	);
+
+	t.throws(
+		function() {
+			parse(123);
+		},
+		/Font argument must be a string/,
+		'throws when attempting to parse non-string argument'
 	);
 
 	t.throws(
