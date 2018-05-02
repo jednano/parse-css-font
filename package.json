@@ -32,7 +32,6 @@
     "css-global-keywords": "^1.0.1",
     "css-list-helpers": "^1.0.1",
     "css-system-font-keywords": "^1.0.0",
-    "tcomb": "^2.5.0",
     "unquote": "^1.1.0"
   },
   "devDependencies": {
