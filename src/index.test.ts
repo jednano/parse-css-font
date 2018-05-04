@@ -6,7 +6,14 @@ const fontWeightKeywords = require('css-font-weight-keywords');
 const fontStyleKeywords = require('css-font-style-keywords');
 const fontStretchKeywords = require('css-font-stretch-keywords');
 
-type T = TestContext & Context<any>;
+test('throws when attempting to parse a number', (t) => {
+	t.throws(
+		() => {
+			parse(42 as any as string);
+		},
+		/Expected a string\.$/,
+	);
+});
 
 test('throws when attempting to parse an empty string', (t) => {
 	t.throws(
@@ -211,7 +218,7 @@ test('returns defaults for style, variant, weight, stretch and lineHeight', (t) 
 	);
 });
 
-function compare<U, V>(t: T, o1: U, o2: V) {
+function compare<U, V>(t: TestContext & Context<any>, o1: U, o2: V) {
 	Object.keys(o2).forEach((key: string) => {
 		t.deepEqual(o1[key], o2[key]);
 	});

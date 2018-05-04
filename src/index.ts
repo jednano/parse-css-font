@@ -21,7 +21,13 @@ export interface IFont {
 	family?: string[];
 }
 
+const errorPrefix = '[parse-css-font] ';
+
 export default function parseCSSFont(value: string) {
+
+	if (typeof value !== 'string') {
+		throw new TypeError(errorPrefix + 'Expected a string.');
+	}
 
 	if (value === '') {
 		throw error('Cannot parse an empty string.');
@@ -103,7 +109,7 @@ export default function parseCSSFont(value: string) {
 }
 
 function error(message: string) {
-	return new Error('[parse-css-font] ' + message);
+	return new Error(errorPrefix + message);
 }
 
 function parseLineHeight(value: string) {
