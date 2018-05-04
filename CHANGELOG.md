@@ -1,3 +1,8 @@
+## 3.0.0
+- **Breaking:** Remove tcomb dependency. Breaking change if you were somehow relying on those errors.
+- Introduce TypeScript.
+- Provide TypeScript-generated type definitions.
+
 ## 2.0.2
 - Update dependencies.
 
