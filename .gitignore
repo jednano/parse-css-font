@@ -1,3 +1,7 @@
-*.log
-coverage/
+*.log*
+*.tgz
+dist/
 node_modules/
+coverage/
+.nyc_output
+parse-css-font-*/

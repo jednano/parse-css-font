@@ -1,0 +1,11 @@
+{
+    "defaultSeverity": "error",
+    "extends": [
+        "tslint:recommended"
+	],
+	"rules": {
+		"indent": [true, "tabs"],
+		"quotemark": [true, "single"],
+		"no-var-requires": false
+	}
+}
