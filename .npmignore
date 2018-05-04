@@ -1,5 +1,11 @@
-.*
-coverage/
-test/
-gulpfile.babel.js
-jsconfig.json
+.editorconfig
+.gitattributes
+*.yml
+ts*.json
+*.map
+*.tgz
+dist/**/*.test.js
+dist/**/*.test.d.ts
+src/
+parse-css-font-*/
+.nyc_output
