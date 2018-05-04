@@ -17,8 +17,8 @@ $ npm install parse-css-font [--save[-dev]]
 ## Usage
 
 ```js
-var parseCssFont = require('parse-css-font');
-parseCssFont('1rem "Roboto Condensed", sans-serif;');
+var parseCSSFont = require('parse-css-font');
+parseCSSFont('1rem "Roboto Condensed", sans-serif;');
 /*
 {
 	size: '1rem',
@@ -32,7 +32,13 @@ parseCssFont('1rem "Roboto Condensed", sans-serif;');
 */
 ```
 
-See [the tests](https://github.com/jedmao/parse-css-font/blob/master/test/index.js) for more scenarios.
+See [the tests](https://github.com/jedmao/parse-css-font/blob/master/src/index.test.ts) for more scenarios.
+
+### ES6/2015 import
+
+```ts
+import parseCSSFont from 'parse-css-font';
+```
 
 ## Testing
 

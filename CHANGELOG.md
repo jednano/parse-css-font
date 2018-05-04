@@ -1,3 +1,7 @@
+## 3.0.1
+- Fix readme.
+- Add `package-lock.json`.
+
 ## 3.0.0
 - **Breaking:** Remove tcomb dependency. Breaking change if you were somehow relying on those errors.
 - Introduce TypeScript.
