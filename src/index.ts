@@ -1,119 +1,113 @@
-﻿var t = require('tcomb');
-var unquote = require('unquote');
-var globalKeywords = require('css-global-keywords');
-var systemFontKeywords = require('css-system-font-keywords');
-var fontWeightKeywords = require('css-font-weight-keywords');
-var fontStyleKeywords = require('css-font-style-keywords');
-var fontStretchKeywords = require('css-font-stretch-keywords');
-var cssListHelpers = require('css-list-helpers');
+﻿const unquote = require('unquote');
+const globalKeywords = require('css-global-keywords');
+const systemFontKeywords = require('css-system-font-keywords');
+const fontWeightKeywords = require('css-font-weight-keywords');
+const fontStyleKeywords = require('css-font-style-keywords');
+const fontStretchKeywords = require('css-font-stretch-keywords');
+import * as cssListHelpers from 'css-list-helpers';
+import * as helpers from './helpers';
 
-var helpers = require('./lib/helpers');
+export interface ISystemFont {
+	system: string;
+}
 
-var SystemFont = t.struct({
-	system: t.String
-});
+export interface IFont {
+	style?: string;
+	variant?: string;
+	weight?: string;
+	stretch?: string;
+	size?: string;
+	lineHeight?: string | number;
+	family?: string[];
+}
 
-var Font = t.struct({
-	style: t.String,
-	variant: t.String,
-	weight: t.String,
-	stretch: t.String,
-	size: t.String,
-	lineHeight: t.union([t.String, t.Number]),
-	family: t.list(t.String)
-});
+export default function parseCSSFont(value: string) {
 
-var Result = t.union([Font, SystemFont]);
+	if (value === '') {
+		throw error('Cannot parse an empty string.');
+	}
 
-module.exports = t.func(t.String, t.Object).of(
-	function(value) {
+	if (systemFontKeywords.indexOf(value) !== -1) {
+		return { system: value } as ISystemFont;
+	}
 
-		if (value === '') {
-			throw error('Cannot parse an empty string.');
+	const font: IFont = {
+		lineHeight: 'normal',
+		stretch: 'normal',
+		style: 'normal',
+		variant: 'normal',
+		weight: 'normal',
+	};
+
+	let isLocked = false;
+	const tokens = cssListHelpers.splitBySpaces(value);
+	let token = tokens.shift();
+	for (; !!token; token = tokens.shift()) {
+
+		if (token === 'normal' || globalKeywords.indexOf(token) !== -1) {
+			['style', 'variant', 'weight', 'stretch'].forEach((prop) => {
+				font[prop] = token;
+			});
+			isLocked = true;
+			continue;
 		}
 
-		if (systemFontKeywords.indexOf(value) !== -1) {
-			return SystemFont({ system: value });
-		}
-
-		var font = {
-			style: 'normal',
-			variant: 'normal',
-			weight: 'normal',
-			stretch: 'normal',
-			lineHeight: 'normal'
-		};
-
-		var isLocked = false;
-		var tokens = cssListHelpers.splitBySpaces(value);
-		var token = tokens.shift();
-		for (; !t.Nil.is(token); token = tokens.shift()) {
-
-			if (token === 'normal' || globalKeywords.indexOf(token) !== -1) {
-				['style', 'variant', 'weight', 'stretch'].forEach(function(prop) {
-					font[prop] = token;
-				});
-				isLocked = true;
-				continue;
-			}
-
-			if (fontWeightKeywords.indexOf(token) !== -1) {
-				if (isLocked) {
-					continue;
-				}
-				font.weight = token;
-				continue;
-			}
-
-			if (fontStyleKeywords.indexOf(token) !== -1) {
-				if (isLocked) {
-					continue;
-				}
-				font.style = token;
-				continue;
-			}
-
-			if (fontStretchKeywords.indexOf(token) !== -1) {
-				if (isLocked) {
-					continue;
-				}
-				font.stretch = token;
-				continue;
-			}
-
-			if (helpers.isSize(token)) {
-				var parts = cssListHelpers.split(token, ['/']);
-				font.size = parts[0];
-				if (!t.Nil.is(parts[1])) {
-					font.lineHeight = parseLineHeight(parts[1]);
-				}
-				if (!tokens.length) {
-					throw error('Missing required font-family.');
-				}
-				font.family = cssListHelpers.splitByCommas(tokens.join(' ')).map(unquote);
-				return Font(font);
-			}
-
-			if (font.variant !== 'normal') {
-				throw error('Unknown or unsupported font token: ' + font.variant);
-			}
-
+		if (fontWeightKeywords.indexOf(token) !== -1) {
 			if (isLocked) {
 				continue;
 			}
-			font.variant = token;
+			font.weight = token;
+			continue;
 		}
 
-		throw error('Missing required font-size.');
-	}
-);
+		if (fontStyleKeywords.indexOf(token) !== -1) {
+			if (isLocked) {
+				continue;
+			}
+			font.style = token;
+			continue;
+		}
 
-function error(message) {
+		if (fontStretchKeywords.indexOf(token) !== -1) {
+			if (isLocked) {
+				continue;
+			}
+			font.stretch = token;
+			continue;
+		}
+
+		if (helpers.isSize(token)) {
+			const parts = cssListHelpers.split(token, ['/']);
+			font.size = parts[0];
+			if (!!parts[1]) {
+				font.lineHeight = parseLineHeight(parts[1]);
+			}
+			if (!tokens.length) {
+				throw error('Missing required font-family.');
+			}
+			font.family = cssListHelpers.splitByCommas(tokens.join(' ')).map(unquote);
+			return font;
+		}
+
+		if (font.variant !== 'normal') {
+			throw error('Unknown or unsupported font token: ' + font.variant);
+		}
+
+		if (isLocked) {
+			continue;
+		}
+		font.variant = token;
+	}
+
+	throw error('Missing required font-size.');
+}
+
+function error(message: string) {
 	return new Error('[parse-css-font] ' + message);
 }
 
-function parseLineHeight(value) {
-	var parsed = parseFloat(value);
+function parseLineHeight(value: string) {
+	const parsed = parseFloat(value);
 	if (parsed.toString() === value) {
 		return parsed;
 	}

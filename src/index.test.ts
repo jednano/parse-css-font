@@ -1,203 +1,218 @@
-﻿var tape = require('tape');
-var globalKeywords = require('css-global-keywords');
-var systemFontKeywords = require('css-system-font-keywords');
-var fontWeightKeywords = require('css-font-weight-keywords');
-var fontStyleKeywords = require('css-font-style-keywords');
-var fontStretchKeywords = require('css-font-stretch-keywords');
+﻿import test, { Context, TestContext } from 'ava';
+import parse from '.';
+const globalKeywords = require('css-global-keywords');
+const systemFontKeywords = require('css-system-font-keywords');
+const fontWeightKeywords = require('css-font-weight-keywords');
+const fontStyleKeywords = require('css-font-style-keywords');
+const fontStretchKeywords = require('css-font-stretch-keywords');
 
-var parse = require('..');
+type T = TestContext & Context<any>;
 
-tape('parse-css-font', function(t) {
-
+test('throws when attempting to parse an empty string', (t) => {
 	t.throws(
-		function() {
+		() => {
 			parse('');
 		},
-		/Cannot parse an empty string/,
-		'throws when attempting to parse an empty string'
+		/Cannot parse an empty string\.$/,
 	);
+});
 
+test('throws when the font-size is missing', (t) => {
 	t.throws(
-		function() {
+		() => {
 			parse('foo');
 		},
-		/Missing required font-size/,
-		'throws when the font-size is missing'
+		/Missing required font-size\.$/,
 	);
+});
 
+test('throws when the font-family is missing', (t) => {
 	t.throws(
-		function() {
+		() => {
 			parse('1rem');
 		},
-		/Missing required font-family/,
-		'throws when the font-family is missing'
+		/Missing required font-family\.$/,
 	);
+});
 
-	systemFontKeywords.forEach(function(systemFont) {
+systemFontKeywords.forEach((systemFont: string) => {
+	test('detects system font keyword: ' + systemFont, (t) => {
 		t.deepEqual(
 			parse(systemFont),
 			{ system: systemFont },
-			'detects system font keyword: ' + systemFont
 		);
 	});
+});
 
+test('detects size: 1rem and family: serif', (t) => {
 	compare(t,
 		parse('1rem serif'),
 		{
+			family: ['serif'],
 			size: '1rem',
-			family: ['serif']
 		},
-		'detects size: 1rem and family: serif'
 	);
+});
 
+test('detects line-height: 1.2', (t) => {
 	compare(t,
 		parse('1rem/1.2 serif'),
 		{
-			lineHeight: 1.2
+			lineHeight: 1.2,
 		},
-		'detects line-height: 1.2'
 	);
+});
 
+test('preserves line-height unit', (t) => {
 	compare(t,
 		parse('1rem/1.2em serif'),
 		{
-			lineHeight: '1.2em'
+			lineHeight: '1.2em',
 		},
-		'preserves line-height unit'
 	);
+});
 
+test('unquotes each font-family', (t) => {
 	compare(t,
 		parse('1rem/1.2em foo bar, "foo bar baz", \'foo\', bar, baz'),
 		{
-			family: ['foo bar', 'foo bar baz', 'foo', 'bar', 'baz']
+			family: ['foo bar', 'foo bar baz', 'foo', 'bar', 'baz'],
 		},
-		'unquotes each font-family'
 	);
+});
 
+test('preserves functions with spaces and commas inside', (t) => {
 	compare(t,
 		parse('fn(a, b, c)/fn(x, y, z) serif'),
 		{
+			lineHeight: 'fn(x, y, z)',
 			size: 'fn(a, b, c)',
-			lineHeight: 'fn(x, y, z)'
 		},
-		'preserves functions with spaces and commas inside'
 	);
+});
 
+test('preserves functions with slashes inside', (t) => {
 	compare(t,
 		parse('fn(a / b / c)/fn(x / y / z) serif'),
 		{
+			lineHeight: 'fn(x / y / z)',
 			size: 'fn(a / b / c)',
-			lineHeight: 'fn(x / y / z)'
 		},
-		'preserves functions with slashes inside'
 	);
+});
 
-	fontWeightKeywords.forEach(function(weight) {
+fontWeightKeywords.forEach((weight: string) => {
+	test('detects weight: ' + weight, (t) => {
 		compare(t,
 			parse(weight + ' 1rem serif'),
-			{ weight: weight },
-			'detects weight: ' + weight
+			{ weight },
 		);
 	});
+});
 
-	fontStyleKeywords.forEach(function(style) {
+fontStyleKeywords.forEach((style: string) => {
+	test('detects style: ' + style, (t) => {
 		compare(t,
 			parse(style + ' 1rem serif'),
-			{ style: style },
-			'detects style: ' + style
+			{ style },
 		);
 	});
+});
 
-	fontStretchKeywords.forEach(function(stretch) {
+fontStretchKeywords.forEach((stretch: string) => {
+	test('detects stretch: ' + stretch, (t) => {
 		compare(t,
 			parse(stretch + ' 1rem serif'),
-			{ stretch: stretch },
-			'detects stretch: ' + stretch
+			{ stretch },
 		);
 	});
+});
 
+test('parses an undetected property as variant', (t) => {
 	compare(t,
 		parse('foo 1rem serif'),
 		{ variant: 'foo' },
-		'parses an undetected property as variant'
 	);
+});
 
+test('throws with two undetected properties: foo bar', (t) => {
 	t.throws(
-		function() {
+		() => {
 			parse('foo bar');
 		},
 		/Unknown or unsupported font token: foo/,
-		'throws with two undetected properties: foo bar'
 	);
+});
 
+test('detects style, variant, weight, stretch, size, lineHeight and family', (t) => {
 	[
 		'italic foo 500 condensed',
-		'condensed 500 foo italic'
-	].forEach(function(font) {
+		'condensed 500 foo italic',
+	].forEach((font: string) => {
 		t.deepEqual(
 			parse(font + ' 1rem/1.2 serif'),
 			{
+				family: ['serif'],
+				lineHeight: 1.2,
+				size: '1rem',
+				stretch: 'condensed',
 				style: 'italic',
 				variant: 'foo',
 				weight: '500',
-				stretch: 'condensed',
-				size: '1rem',
-				lineHeight: 1.2,
-				family: ['serif']
 			},
-			'detects style, variant, weight, stretch, size, lineHeight and family'
 		);
 	});
+});
 
+test('overrides all props before size with normal when one prop is normal', (t) => {
 	t.deepEqual(
 		parse('normal italic foo 500 condensed 1rem/1.2 serif'),
 		{
+			family: ['serif'],
+			lineHeight: 1.2,
+			size: '1rem',
+			stretch: 'normal',
 			style: 'normal',
 			variant: 'normal',
 			weight: 'normal',
-			stretch: 'normal',
-			size: '1rem',
-			lineHeight: 1.2,
-			family: ['serif']
 		},
-		'overrides all props before size with normal when one prop is normal'
 	);
+});
 
-	globalKeywords.forEach(function(value) {
+globalKeywords.forEach((value: string) => {
+	test('overrides all props before size with ' + value + ' when one prop is ' + value, (t) => {
 		t.deepEqual(
 			parse('italic ' + value + ' 500 condensed 1rem/1.2 serif'),
 			{
+				family: ['serif'],
+				lineHeight: 1.2,
+				size: '1rem',
+				stretch: value,
 				style: value,
 				variant: value,
 				weight: value,
-				stretch: value,
-				size: '1rem',
-				lineHeight: 1.2,
-				family: ['serif']
 			},
-			'overrides all props before size with ' + value + ' when one prop is ' + value
 		);
 	});
+});
 
+test('returns defaults for style, variant, weight, stretch and lineHeight', (t) => {
 	t.deepEqual(
 		parse('1rem serif'),
 		{
-			size: '1rem',
 			family: ['serif'],
+			lineHeight: 'normal',
+			size: '1rem',
+			stretch: 'normal',
 			style: 'normal',
 			variant: 'normal',
 			weight: 'normal',
-			stretch: 'normal',
-			lineHeight: 'normal'
 		},
-		'returns defaults for style, variant, weight, stretch and lineHeight'
 	);
-
-	t.end();
 });
 
-function compare(t, o1, o2, message) {
-	Object.keys(o2).forEach(function(key) {
-		t.deepEqual(o1[key], o2[key], message);
+function compare<U, V>(t: T, o1: U, o2: V) {
+	Object.keys(o2).forEach((key: string) => {
+		t.deepEqual(o1[key], o2[key]);
 	});
 }
