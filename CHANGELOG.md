@@ -1,3 +1,6 @@
+## 3.0.2
+- Fix parsing of `1rem / 1.2` when the slash is surrounded by spaces.
+
 ## 3.0.1
 - Fix readme.
 - Add `package-lock.json`.

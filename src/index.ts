@@ -87,6 +87,9 @@ export default function parseCSSFont(value: string) {
 			font.size = parts[0];
 			if (!!parts[1]) {
 				font.lineHeight = parseLineHeight(parts[1]);
+			} else if (tokens[0] === '/') {
+				tokens.shift();
+				font.lineHeight = parseLineHeight(tokens.shift() as string);
 			}
 			if (!tokens.length) {
 				throw error('Missing required font-family.');
