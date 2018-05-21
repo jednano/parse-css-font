@@ -70,6 +70,16 @@ test('detects line-height: 1.2', (t) => {
 	);
 });
 
+test('detects font-size and line-height when using spaces around "/" separator', (t) => {
+	compare(t,
+		parse('1rem / 1.2 serif'),
+		{
+			lineHeight: 1.2,
+			size: '1rem',
+		},
+	);
+});
+
 test('preserves line-height unit', (t) => {
 	compare(t,
 		parse('1rem/1.2em serif'),
