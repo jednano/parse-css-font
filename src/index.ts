@@ -48,6 +48,7 @@ export default function parseCSSFont(value: string) {
 	let isLocked = false;
 	const tokens = cssListHelpers.splitBySpaces(value);
 	let token = tokens.shift();
+	let prelimStretchNum: boolean = false;
 	for (; !!token; token = tokens.shift()) {
 
 		if (token === 'normal' || globalKeywords.indexOf(token) !== -1) {
@@ -58,12 +59,21 @@ export default function parseCSSFont(value: string) {
 			continue;
 		}
 
-		if (fontWeightKeywords.indexOf(token) !== -1) {
+		if (helpers.isWeight(token)) {
 			if (isLocked) {
 				continue;
 			}
-			font.weight = token;
-			continue;
+			if (fontWeightKeywords.indexOf(token) !== -1) {
+				font.weight = token;
+				continue;
+			} else {
+				const num = parseFloat(token);
+				if (num < 1 || num > 1000) {
+					throw error('Invalid font-weight value: must be between 1 and 1000 (inclusive).');
+				}
+				font.weight = token;
+				continue;
+			}
 		}
 
 		if (fontStyleKeywords.indexOf(token) !== -1) {
@@ -74,12 +84,18 @@ export default function parseCSSFont(value: string) {
 			continue;
 		}
 
-		if (fontStretchKeywords.indexOf(token) !== -1) {
+		if (helpers.isStretch(token)) {
 			if (isLocked) {
 				continue;
 			}
-			font.stretch = token;
-			continue;
+			if (fontStretchKeywords.indexOf(token) !== -1) {
+				font.stretch = token;
+				continue;
+			} else {
+				prelimStretchNum = true;
+				font.stretch = token;
+				continue;
+			}
 		}
 
 		if (helpers.isSize(token)) {
@@ -94,7 +110,18 @@ export default function parseCSSFont(value: string) {
 			if (!tokens.length) {
 				throw error('Missing required font-family.');
 			}
-			font.family = cssListHelpers.splitByCommas(tokens.join(' ')).map(unquote);
+			font.family = cssListHelpers.splitByCommas(tokens.join(' ')).map(unquote) as string[];
+			if (prelimStretchNum) {
+				const num = parseFloat(font.stretch as string);
+				if (num < 0) {
+					throw error('Invalid font-stretch value: must not be negative.');
+				}
+			}
+			return font;
+		} else if (prelimStretchNum) {
+			font.size = font.stretch;
+			font.stretch = 'normal';
+			font.family = cssListHelpers.splitByCommas(tokens.join(' ')).map(unquote) as string[];
 			return font;
 		}
 
@@ -119,6 +146,23 @@ function parseLineHeight(value: string) {
 	const parsed = parseFloat(value);
 	if (parsed.toString() === value) {
 		return parsed;
+	} else {
+		const match = /^(\+|-)?(\.)?/.exec(value) as RegExpMatchArray;
+		let val: string = value;
+		if (match[1] === '+') {
+			val = val.substring(1);
+		}
+		if (match[2] === '.') {
+				// NOTE although not specifically prohibited, we do not consider negative numbers for line-height valid:
+			// if (match[1] === '-') {
+			// 	val = '-0' + val.substring(1);
+			// } else {
+				val = '0' + val;
+			// }
+		}
+		if (parsed.toString() === val) {
+			return parsed;
+		}
 	}
 	return value;
 }

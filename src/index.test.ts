@@ -6,6 +6,29 @@ const fontWeightKeywords = require('css-font-weight-keywords');
 const fontStyleKeywords = require('css-font-style-keywords');
 const fontStretchKeywords = require('css-font-stretch-keywords');
 
+const numberValues = [
+	'1', '56', '22.876', '87', '99.999999999', '100.6',
+	'123', '200.89', '23.300569', '321', '254', '328.907',
+];
+
+// A <number> value between 1 and 1000, inclusive.
+const fontWeightNumberValues = numberValues.slice().concat(['999', '999.999999999']);
+
+// A <number> value outside of range 1 and 1000, inclusive.
+const invalidFontWeightNumberValues = ['0.1', '.34556', '1000.0000000000001', '23423456'];
+
+// A <percentage> value. Negative values are not allowed for this property.
+const fontStetchPercentValues = numberValues.map((val) => val + '%').concat(['.256%', '0.75%', '+.8%', '+26.8%']);
+
+// A negative <percentage> value.
+const invalidFontStetchPercentValues = numberValues.map((val) => '-' + val + '%').concat(['-.234%', '-53%']);
+
+const lineHeightNumberValues = numberValues.slice().concat(['.256', '0.75', '+.8', '+26.8']);
+const unitAndPercentNumberValues = numberValues.map((val) => val + '%')
+		.concat(numberValues.map((val) => val + 'rem'))
+		.concat(numberValues.map((val) => val + 'em'))
+		.concat(numberValues.map((val) => val + 'px'));
+
 test('throws when attempting to parse a number', (t) => {
 	t.throws(
 		() => {
@@ -42,6 +65,28 @@ test('throws when the font-family is missing', (t) => {
 	);
 });
 
+invalidFontWeightNumberValues.forEach((invalidWeight: string) => {
+	test('throws when the font-weight is invalid number: ' + invalidWeight, (t) => {
+		t.throws(
+			() => {
+				parse(invalidWeight + ' 1rem serif');
+			},
+			/Invalid font-weight value: must be between 1 and 1000 \(inclusive\)\.$/,
+		);
+	});
+});
+
+invalidFontStetchPercentValues.forEach((invalidStretch: string) => {
+	test('throws when the font-stretch is negative percent: ' + invalidStretch, (t) => {
+		t.throws(
+			() => {
+				parse(invalidStretch + ' 1rem serif');
+			},
+			/Invalid font-stretch value: must not be negative\.$/,
+		);
+	});
+});
+
 systemFontKeywords.forEach((systemFont: string) => {
 	test('detects system font keyword: ' + systemFont, (t) => {
 		t.deepEqual(
@@ -59,6 +104,33 @@ test('detects size: 1rem and family: serif', (t) => {
 			size: '1rem',
 		},
 	);
+});
+
+unitAndPercentNumberValues.forEach((fontSize: string) => {
+	test('detects fontSize: ' + fontSize, (t) => {
+		compare(t,
+			parse(fontSize + ' serif'),
+			{ size: fontSize },
+		);
+	});
+});
+
+lineHeightNumberValues.forEach((lineHeight: string) => {
+	test('detects lineHeight: ' + lineHeight, (t) => {
+		compare(t,
+			parse('23.98%/' + lineHeight + ' 1rem serif'),
+			{ lineHeight: parseFloat(lineHeight) },
+		);
+	});
+});
+
+unitAndPercentNumberValues.forEach((lineHeight: string) => {
+	test('detects lineHeight units: ' + lineHeight, (t) => {
+		compare(t,
+			parse('2px/' + lineHeight + ' 1rem serif'),
+			{ lineHeight },
+		);
+	});
 });
 
 test('detects line-height: 1.2', (t) => {
@@ -118,7 +190,7 @@ test('preserves functions with slashes inside', (t) => {
 	);
 });
 
-fontWeightKeywords.forEach((weight: string) => {
+fontWeightKeywords.concat(fontWeightNumberValues).forEach((weight: string) => {
 	test('detects weight: ' + weight, (t) => {
 		compare(t,
 			parse(weight + ' 1rem serif'),
@@ -136,7 +208,7 @@ fontStyleKeywords.forEach((style: string) => {
 	});
 });
 
-fontStretchKeywords.forEach((stretch: string) => {
+fontStretchKeywords.concat(fontStetchPercentValues).forEach((stretch: string) => {
 	test('detects stretch: ' + stretch, (t) => {
 		compare(t,
 			parse(stretch + ' 1rem serif'),
