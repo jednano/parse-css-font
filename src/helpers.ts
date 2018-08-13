@@ -2,8 +2,12 @@ const fontWeightKeywords = require('css-font-weight-keywords');
 const cssFontSizeKeywords = require('css-font-size-keywords');
 const fontStretchKeywords = require('css-font-stretch-keywords');
 
+const sizePattern = /^\+?[\d\.]/;
+const numberPrefixPattern = /^(\+|-)?(\d|\.)/;
+const percentPattern = /%$/;
+
 export function isSize(value: string) {
-	return /^\+?[\d\.]/.test(value)
+	return sizePattern.test(value)
 		|| value.indexOf('/') !== -1
 		|| cssFontSizeKeywords.indexOf(value) !== -1
 	;
@@ -11,29 +15,36 @@ export function isSize(value: string) {
 
 export function isWeight(value: string) {
 	return fontWeightKeywords.indexOf(value) !== -1
-		|| isOnlyNumber(value, false);
+		|| isOnlyNumber(value);
 }
 
 export function isStretch(value: string) {
 	return fontStretchKeywords.indexOf(value) !== -1
-		|| isOnlyNumber(value, true);
+		|| isOnlyPercentNumber(value);
 }
 
-function isOnlyNumber(value: string, isPercent: boolean): boolean {
-	const match = /^(\+|-)?(\d|\.)/.exec(value);
-	if (match && (!isPercent || /%$/.test(value))) {
-		let val = isPercent ? value.substring(0, value.length - 1) : value;
-		if (match[1] === '+') {
-			val = val.substring(1);
-		}
-		if (match[2] === '.') {
-			if (match[1] === '-') {
-				val = '-0' + val.substring(1);
-			} else {
-				val = '0' + val;
-			}
-		}
-		return parseFloat(val).toString() === val;
+function isOnlyPercentNumber(value: string): boolean {
+	if (percentPattern.test(value)) {
+		return isOnlyNumber(value.substring(0, value.length - 1));
 	}
 	return false;
+}
+
+function isOnlyNumber(value: string): boolean {
+	const match = numberPrefixPattern.exec(value);
+	if (!match) {
+		return false;
+	}
+	const [, sign, dot] = match;
+	if (sign === '+') {
+		value = value.substring(1);
+	}
+	if (dot === '.') {
+		if (sign === '-') {
+			value = '-0' + value.substring(1);
+		} else {
+			value = '0' + value;
+		}
+	}
+	return parseFloat(value).toString() === value;
 }
