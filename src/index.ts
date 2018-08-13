@@ -63,17 +63,14 @@ export default function parseCSSFont(value: string) {
 			if (isLocked) {
 				continue;
 			}
-			if (fontWeightKeywords.indexOf(token) !== -1) {
-				font.weight = token;
-				continue;
-			} else {
+			if (fontWeightKeywords.indexOf(token) === -1) {
 				const num = parseFloat(token);
 				if (num < 1 || num > 1000) {
 					throw error('Invalid font-weight value: must be between 1 and 1000 (inclusive).');
 				}
-				font.weight = token;
-				continue;
 			}
+			font.weight = token;
+			continue;
 		}
 
 		if (fontStyleKeywords.indexOf(token) !== -1) {
@@ -88,14 +85,11 @@ export default function parseCSSFont(value: string) {
 			if (isLocked) {
 				continue;
 			}
-			if (fontStretchKeywords.indexOf(token) !== -1) {
-				font.stretch = token;
-				continue;
-			} else {
+			if (fontStretchKeywords.indexOf(token) === -1) {
 				prelimStretchNum = true;
-				font.stretch = token;
-				continue;
 			}
+			font.stretch = token;
+			continue;
 		}
 
 		if (helpers.isSize(token)) {
@@ -110,7 +104,7 @@ export default function parseCSSFont(value: string) {
 			if (!tokens.length) {
 				throw error('Missing required font-family.');
 			}
-			font.family = cssListHelpers.splitByCommas(tokens.join(' ')).map(unquote) as string[];
+			font.family = cssListHelpers.splitByCommas(tokens.join(' ')).map(unquote);
 			if (prelimStretchNum) {
 				const num = parseFloat(font.stretch as string);
 				if (num < 0) {
@@ -121,7 +115,7 @@ export default function parseCSSFont(value: string) {
 		} else if (prelimStretchNum) {
 			font.size = font.stretch;
 			font.stretch = 'normal';
-			font.family = cssListHelpers.splitByCommas(tokens.join(' ')).map(unquote) as string[];
+			font.family = cssListHelpers.splitByCommas(tokens.join(' ')).map(unquote);
 			return font;
 		}
 
@@ -147,18 +141,14 @@ function parseLineHeight(value: string) {
 	if (parsed.toString() === value) {
 		return parsed;
 	} else {
-		const match = /^(\+|-)?(\.)?/.exec(value) as RegExpMatchArray;
+		const match = /^(\+)?(\.)?/.exec(value) as RegExpMatchArray;
 		let val: string = value;
-		if (match[1] === '+') {
+		const [, sign, dot] = match;
+		if (sign === '+') {
 			val = val.substring(1);
 		}
-		if (match[2] === '.') {
-				// NOTE although not specifically prohibited, we do not consider negative numbers for line-height valid:
-			// if (match[1] === '-') {
-			// 	val = '-0' + val.substring(1);
-			// } else {
-				val = '0' + val;
-			// }
+		if (dot === '.') {
+			val = '0' + val;
 		}
 		if (parsed.toString() === val) {
 			return parsed;
