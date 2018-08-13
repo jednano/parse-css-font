@@ -7,23 +7,51 @@ const fontStyleKeywords = require('css-font-style-keywords');
 const fontStretchKeywords = require('css-font-stretch-keywords');
 
 const numberValues = [
-	'1', '56', '22.876', '87', '99.999999999', '100.6',
-	'123', '200.89', '23.300569', '321', '254', '328.907',
+	'1',
+	'56',
+	'22.876',
+	'87',
+	'99.999999999',
+	'100.6',
+	'123',
+	'200.89',
+	'23.300569',
+	'321',
+	'254',
+	'328.907',
 ];
 
-// A <number> value between 1 and 1000, inclusive.
-const fontWeightNumberValues = numberValues.slice().concat(['999', '999.999999999']);
+const fontWeightNumberValues = numberValues.concat([
+	'999',
+	'999.999999999',
+]);
 
-// A <number> value outside of range 1 and 1000, inclusive.
-const invalidFontWeightNumberValues = ['0.1', '.34556', '1000.0000000000001', '23423456'];
+const invalidFontWeightNumberValues = [
+	'0.1',
+	'.34556',
+	'1000.0000000000001',
+	'23423456',
+];
 
-// A <percentage> value. Negative values are not allowed for this property.
-const fontStetchPercentValues = numberValues.map((val) => val + '%').concat(['.256%', '0.75%', '+.8%', '+26.8%']);
+const fontStetchPercentValues = numberValues.concat([
+	'.256',
+	'0.75',
+	'+.8',
+	'+26.8',
+]).map((val) => val + '%');
 
-// A negative <percentage> value.
-const invalidFontStetchPercentValues = numberValues.map((val) => '-' + val + '%').concat(['-.234%', '-53%']);
+const invalidFontStetchPercentValues = numberValues.concat([
+	'.234',
+	'53',
+]).map((val) => `-${val}%`);
 
-const lineHeightNumberValues = numberValues.slice().concat(['.256', '0.75', '+.8', '+26.8']);
+const lineHeightNumberValues = numberValues.concat([
+	'.256',
+	'0.75',
+	'+.8',
+	'+26.8',
+]);
+
 const unitAndPercentNumberValues = numberValues.map((val) => val + '%')
 		.concat(numberValues.map((val) => val + 'rem'))
 		.concat(numberValues.map((val) => val + 'em'))
