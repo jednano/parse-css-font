@@ -3,7 +3,7 @@ const cssFontSizeKeywords = require('css-font-size-keywords');
 const fontStretchKeywords = require('css-font-stretch-keywords');
 
 const sizePattern = /^\+?[\d\.]/;
-const numberPrefixPattern = /^(\+|-)?(\d|\.)/;
+const numberPrefixPattern = /^(\+|-)?(\.)?\d/;
 const percentPattern = /%$/;
 
 export function isSize(value: string) {
