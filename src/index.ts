@@ -141,7 +141,7 @@ function parseLineHeight(value: string) {
 	if (parsed.toString() === value) {
 		return parsed;
 	} else {
-		const match = /^(\+)?(\.)?/.exec(value) as RegExpMatchArray;
+		const match = /^(\+)?(\.)?/.exec(value) as RegExpExecArray;
 		let val: string = value;
 		const [, sign, dot] = match;
 		if (sign === '+') {
