@@ -140,19 +140,18 @@ function parseLineHeight(value: string) {
 	const parsed = parseFloat(value);
 	if (parsed.toString() === value) {
 		return parsed;
-	} else {
-		const match = /^(\+)?(\.)?/.exec(value) as RegExpExecArray;
-		let val: string = value;
-		const [, sign, dot] = match;
-		if (sign === '+') {
-			val = val.substring(1);
-		}
-		if (dot === '.') {
-			val = '0' + val;
-		}
-		if (parsed.toString() === val) {
-			return parsed;
-		}
+	}
+	const match = /^(\+)?(\.)?/.exec(value);
+	let val: string = value;
+	const [, sign, dot] = match;
+	if (sign === '+') {
+		val = val.substring(1);
+	}
+	if (dot === '.') {
+		val = '0' + val;
+	}
+	if (parsed.toString() === val) {
+		return parsed;
 	}
 	return value;
 }
