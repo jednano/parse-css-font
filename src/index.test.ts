@@ -5,8 +5,13 @@ const fontStyleKeywords = require('css-font-style-keywords')
 const fontStretchKeywords = require('css-font-stretch-keywords')
 
 import parse from '.'
+import commonJSModule = require('.')
 
 describe('parse-css-font', () => {
+	it('also exports a CommonJS module', () => {
+		expect(commonJSModule).toBe(parse)
+	})
+
 	it('throws when attempting to parse a number', () => {
 		expect(() => {
 			parse((42 as any) as string)
