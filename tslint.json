@@ -1,11 +1,8 @@
 {
-    "defaultSeverity": "error",
-    "extends": [
-        "tslint:recommended"
-	],
+	"defaultSeverity": "error",
+	"extends": ["@jedmao/tslint"],
 	"rules": {
-		"indent": [true, "tabs"],
-		"quotemark": [true, "single"],
+		"interface-name": false,
 		"no-var-requires": false
 	}
 }

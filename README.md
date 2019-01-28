@@ -2,7 +2,10 @@
 
 [![NPM version](http://img.shields.io/npm/v/parse-css-font.svg?style=flat)](https://www.npmjs.org/package/parse-css-font)
 [![npm license](http://img.shields.io/npm/l/parse-css-font.svg?style=flat-square)](https://www.npmjs.org/package/parse-css-font)
-[![Travis Build Status](https://img.shields.io/travis/jedmao/parse-css-font.svg?label=unix)](https://travis-ci.org/jedmao/parse-css-font)
+[![Travis Build Status](https://img.shields.io/travis/jedmao/parse-css-font.svg)](https://travis-ci.org/jedmao/parse-css-font)
+[![codecov](https://codecov.io/gh/jedmao/parse-css-font/branch/master/graph/badge.svg)](https://codecov.io/gh/jedmao/parse-css-font)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
+[![Unicorn Approved](https://img.shields.io/badge/unicorn-approved-ff69b4.svg)](https://twitter.com/sindresorhus/status/457989012528316416?ref_src=twsrc%5Etfw&ref_url=https%3A%2F%2Fwww.quora.com%2FWhat-does-the-unicorn-approved-shield-mean-in-GitHub)
 
 [![npm](https://nodei.co/npm/parse-css-font.svg?downloads=true)](https://nodei.co/npm/parse-css-font/)
 
@@ -17,8 +20,8 @@ $ npm install parse-css-font [--save[-dev]]
 ## Usage
 
 ```js
-var parseCSSFont = require('parse-css-font');
-parseCSSFont('1rem "Roboto Condensed", sans-serif;');
+var parseCSSFont = require('parse-css-font')
+parseCSSFont('1rem "Roboto Condensed", sans-serif;')
 /*
 {
 	size: '1rem',
@@ -37,7 +40,7 @@ See [the tests](https://github.com/jedmao/parse-css-font/blob/master/src/index.t
 ### ES6/2015 import
 
 ```ts
-import parseCSSFont from 'parse-css-font';
+import parseCSSFont from 'parse-css-font'
 ```
 
 ## Testing
