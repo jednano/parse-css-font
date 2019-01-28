@@ -1,6 +1,6 @@
 {
   "name": "parse-css-font",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "description": "Parse the CSS font property value.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
