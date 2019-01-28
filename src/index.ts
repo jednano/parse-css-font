@@ -1,5 +1,4 @@
 ﻿const unquote = require('unquote')
-const globalKeywords = require('css-global-keywords')
 const systemFontKeywords = require('css-system-font-keywords')
 const fontWeightKeywords = require('css-font-weight-keywords')
 const fontStyleKeywords = require('css-font-style-keywords')
@@ -46,9 +45,8 @@ export default function parseCSSFont(value: string) {
 
 	let isLocked = false
 	const tokens = cssListHelpers.splitBySpaces(value)
-	let token = tokens.shift()
-	for (; !!token; token = tokens.shift()) {
-		if (token === 'normal' || globalKeywords.indexOf(token) !== -1) {
+	for (let token = tokens.shift(); !!token; token = tokens.shift()) {
+		if (token === 'normal') {
 			;(['style', 'variant', 'weight', 'stretch'] as [
 				'style',
 				'variant',
@@ -61,19 +59,19 @@ export default function parseCSSFont(value: string) {
 			continue
 		}
 
-		if (fontWeightKeywords.indexOf(token) !== -1) {
-			if (isLocked) {
-				continue
-			}
-			font.weight = token
-			continue
-		}
-
 		if (fontStyleKeywords.indexOf(token) !== -1) {
 			if (isLocked) {
 				continue
 			}
 			font.style = token
+			continue
+		}
+
+		if (fontWeightKeywords.indexOf(token) !== -1) {
+			if (isLocked) {
+				continue
+			}
+			font.weight = token
 			continue
 		}
 

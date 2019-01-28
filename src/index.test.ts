@@ -1,5 +1,4 @@
-﻿const globalKeywords = require('css-global-keywords')
-const systemFontKeywords = require('css-system-font-keywords')
+﻿const systemFontKeywords = require('css-system-font-keywords')
 const fontWeightKeywords = require('css-font-weight-keywords')
 const fontStyleKeywords = require('css-font-style-keywords')
 const fontStretchKeywords = require('css-font-stretch-keywords')
@@ -166,28 +165,6 @@ describe('parse-css-font', () => {
 			variant: 'normal',
 			weight: 'normal',
 		})
-	})
-
-	globalKeywords.forEach((value: string) => {
-		it(
-			'overrides all props before size with ' +
-				value +
-				' when one prop is ' +
-				value,
-			() => {
-				expect(
-					parse('italic ' + value + ' 500 condensed 1rem/1.2 serif'),
-				).toEqual({
-					family: ['serif'],
-					lineHeight: 1.2,
-					size: '1rem',
-					stretch: value,
-					style: value,
-					variant: value,
-					weight: value,
-				})
-			},
-		)
 	})
 
 	it('returns defaults for style, variant, weight, stretch and lineHeight', () => {
