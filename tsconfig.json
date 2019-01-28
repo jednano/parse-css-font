@@ -1,23 +1,12 @@
 {
-  "compilerOptions": {
+	"extends": "@jedmao/tsconfig",
+	"compilerOptions": {
 		"outDir": "dist",
-		"declaration": true,
-    "module": "commonjs",
-    "target": "es5",
-    "lib": ["es6", "dom"],
-    "sourceMap": false,
-    "moduleResolution": "node",
-    "rootDir": "src",
-    "forceConsistentCasingInFileNames": true,
-    "noImplicitReturns": true,
-    "noImplicitThis": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "suppressImplicitAnyIndexErrors": true,
-		"noUnusedLocals": true
-  },
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+		"lib": ["es6", "dom"],
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"rootDir": "src",
+		"target": "es5"
+	},
+	"exclude": ["node_modules", "dist"]
 }
