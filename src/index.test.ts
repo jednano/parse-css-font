@@ -35,8 +35,26 @@ describe('parse-css-font', () => {
 		}).toThrow(/Missing required font-family\.$/)
 	})
 
+	it('throws when two styles are present', () => {
+		expect(() => {
+			parse('italic oblique 1rem serif')
+		}).toThrow(/Font style already defined\./)
+	})
+
+	it('throws when two weights are present', () => {
+		expect(() => {
+			parse('bold 500 1rem serif')
+		}).toThrow(/Font weight already defined\./)
+	})
+
+	it('throws when two stretches are present', () => {
+		expect(() => {
+			parse('condensed expanded 1rem serif')
+		}).toThrow(/Font stretch already defined\./)
+	})
+
 	systemFontKeywords.forEach((systemFont: string) => {
-		it('detects system font keyword: ' + systemFont, () => {
+		it(`detects system font keyword: ${systemFont}`, () => {
 			expect(parse(systemFont)).toEqual({ system: systemFont })
 		})
 	})
@@ -104,7 +122,7 @@ describe('parse-css-font', () => {
 	})
 
 	fontWeightKeywords.forEach((weight: string) => {
-		it('detects weight: ' + weight, () => {
+		it(`detects weight: ${weight}`, () => {
 			expect(parse(weight + ' 1rem serif')).toEqual(
 				expect.objectContaining({ weight }),
 			)
@@ -112,7 +130,7 @@ describe('parse-css-font', () => {
 	})
 
 	fontStyleKeywords.forEach((style: string) => {
-		it('detects style: ' + style, () => {
+		it(`detects style: ${style}`, () => {
 			expect(parse(style + ' 1rem serif')).toEqual(
 				expect.objectContaining({ style }),
 			)
@@ -120,7 +138,7 @@ describe('parse-css-font', () => {
 	})
 
 	fontStretchKeywords.forEach((stretch: string) => {
-		it('detects stretch: ' + stretch, () => {
+		it(`detects stretch: ${stretch}`, () => {
 			expect(parse(stretch + ' 1rem serif')).toEqual(
 				expect.objectContaining({ stretch }),
 			)
@@ -133,16 +151,22 @@ describe('parse-css-font', () => {
 		)
 	})
 
-	it('throws with two undetected properties: foo bar', () => {
-		expect(() => {
-			parse('foo bar')
-		}).toThrow(/Unknown or unsupported font token: foo/)
+	it('parses foo, bar & baz as variants', () => {
+		expect(parse('foo condensed bar italic 500 baz 1rem/1.2 serif')).toEqual({
+			family: ['serif'],
+			lineHeight: 1.2,
+			size: '1rem',
+			stretch: 'condensed',
+			style: 'italic',
+			variant: 'foo bar baz',
+			weight: '500',
+		})
 	})
 
 	it('detects style, variant, weight, stretch, size, lineHeight and family', () => {
 		;['italic foo 500 condensed', 'condensed 500 foo italic'].forEach(
 			(font: string) => {
-				expect(parse(font + ' 1rem/1.2 serif')).toEqual({
+				expect(parse(`${font} 1rem/1.2 serif`)).toEqual({
 					family: ['serif'],
 					lineHeight: 1.2,
 					size: '1rem',
@@ -153,18 +177,6 @@ describe('parse-css-font', () => {
 				})
 			},
 		)
-	})
-
-	it('overrides all props before size with normal when one prop is normal', () => {
-		expect(parse('normal italic foo 500 condensed 1rem/1.2 serif')).toEqual({
-			family: ['serif'],
-			lineHeight: 1.2,
-			size: '1rem',
-			stretch: 'normal',
-			style: 'normal',
-			variant: 'normal',
-			weight: 'normal',
-		})
 	})
 
 	it('returns defaults for style, variant, weight, stretch and lineHeight', () => {
