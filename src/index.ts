@@ -97,7 +97,9 @@ export default function parseCSSFont(value: string) {
 			if (!tokens.length) {
 				throw error('Missing required font-family.')
 			}
-			font.family = cssListHelpers.splitByCommas(tokens.join(' ')).map(unquote)
+			font.family = cssListHelpers
+				.splitByCommas(tokens.join(' '))
+				.map(unquote)
 			return font
 		}
 
@@ -125,3 +127,6 @@ function parseLineHeight(value: string) {
 	}
 	return value
 }
+
+// @ts-ignore
+module.exports = Object.assign(exports.default, exports)
