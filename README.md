@@ -22,7 +22,7 @@ $ npm install parse-css-font [--save[-dev]]
 ## Usage
 
 ```js
-var parseCSSFont = require('parse-css-font')
+const parseCSSFont = require('parse-css-font')
 parseCSSFont('1rem "Roboto Condensed", sans-serif;')
 /*
 {

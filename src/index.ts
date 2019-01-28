@@ -1,5 +1,4 @@
 ﻿const unquote = require('unquote')
-const globalKeywords = require('css-global-keywords')
 const systemFontKeywords = require('css-system-font-keywords')
 const fontWeightKeywords = require('css-font-weight-keywords')
 const fontStyleKeywords = require('css-font-style-keywords')
@@ -21,11 +20,18 @@ export interface IFont {
 	family?: string[]
 }
 
-const errorPrefix = '[parse-css-font] '
+const errorPrefix = '[parse-css-font]'
+
+const firstDeclarations: ['style', 'weight', 'stretch', 'variant'] = [
+	'style',
+	'weight',
+	'stretch',
+	'variant',
+]
 
 export default function parseCSSFont(value: string) {
 	if (typeof value !== 'string') {
-		throw new TypeError(errorPrefix + 'Expected a string.')
+		throw error('Expected a string.', TypeError)
 	}
 
 	if (value === '') {
@@ -38,86 +44,94 @@ export default function parseCSSFont(value: string) {
 
 	const font: IFont = {
 		lineHeight: 'normal',
-		stretch: 'normal',
-		style: 'normal',
-		variant: 'normal',
-		weight: 'normal',
+		stretch: '',
+		style: '',
+		variant: '',
+		weight: '',
 	}
 
-	let isLocked = false
+	const consumers = [style, weight, stretch, variant]
 	const tokens = cssListHelpers.splitBySpaces(value)
-	let token = tokens.shift()
-	for (; !!token; token = tokens.shift()) {
-		if (token === 'normal' || globalKeywords.indexOf(token) !== -1) {
-			;(['style', 'variant', 'weight', 'stretch'] as [
-				'style',
-				'variant',
-				'weight',
-				'stretch'
-			]).forEach(prop => {
-				font[prop] = token
-			})
-			isLocked = true
+	nextToken: for (
+		let token = tokens.shift();
+		!!token;
+		token = tokens.shift()
+	) {
+		if (token === 'normal') {
 			continue
 		}
 
-		if (fontWeightKeywords.indexOf(token) !== -1) {
-			if (isLocked) {
-				continue
+		for (const consume of consumers) {
+			if (consume(token)) {
+				continue nextToken
 			}
-			font.weight = token
-			continue
 		}
 
-		if (fontStyleKeywords.indexOf(token) !== -1) {
-			if (isLocked) {
-				continue
-			}
-			font.style = token
-			continue
+		const parts = cssListHelpers.split(token, ['/'])
+		font.size = parts[0]
+		if (!!parts[1]) {
+			font.lineHeight = parseLineHeight(parts[1])
+		} else if (tokens[0] === '/') {
+			tokens.shift()
+			font.lineHeight = parseLineHeight(tokens.shift() as string)
+		}
+		if (!tokens.length) {
+			throw error('Missing required font-family.')
+		}
+		font.family = cssListHelpers.splitByCommas(tokens.join(' ')).map(unquote)
+
+		for (const name of firstDeclarations) {
+			font[name] = font[name] || 'normal'
 		}
 
-		if (fontStretchKeywords.indexOf(token) !== -1) {
-			if (isLocked) {
-				continue
-			}
-			font.stretch = token
-			continue
-		}
-
-		if (helpers.isSize(token)) {
-			const parts = cssListHelpers.split(token, ['/'])
-			font.size = parts[0]
-			if (!!parts[1]) {
-				font.lineHeight = parseLineHeight(parts[1])
-			} else if (tokens[0] === '/') {
-				tokens.shift()
-				font.lineHeight = parseLineHeight(tokens.shift() as string)
-			}
-			if (!tokens.length) {
-				throw error('Missing required font-family.')
-			}
-			font.family = cssListHelpers
-				.splitByCommas(tokens.join(' '))
-				.map(unquote)
-			return font
-		}
-
-		if (font.variant !== 'normal') {
-			throw error('Unknown or unsupported font token: ' + font.variant)
-		}
-
-		if (isLocked) {
-			continue
-		}
-		font.variant = token
+		return font
 	}
 
 	throw error('Missing required font-size.')
+
+	function style(token: string) {
+		if (fontStyleKeywords.indexOf(token) === -1) {
+			return
+		}
+		if (font.style) {
+			throw error('Font style already defined.')
+		}
+		return (font.style = token)
+	}
+
+	function weight(token: string) {
+		if (fontWeightKeywords.indexOf(token) === -1) {
+			return
+		}
+		if (font.weight) {
+			throw error('Font weight already defined.')
+		}
+		return (font.weight = token)
+	}
+
+	function stretch(token: string) {
+		if (fontStretchKeywords.indexOf(token) === -1) {
+			return
+		}
+		if (font.stretch) {
+			throw error('Font stretch already defined.')
+		}
+		return (font.stretch = token)
+	}
+
+	function variant(token: string) {
+		return (
+			!helpers.isSize(token) &&
+			(font.variant = font.variant ? [font.variant, token].join(' ') : token)
+		)
+	}
 }
 
-function error(message: string) {
-	return new Error(errorPrefix + message)
+function error(
+	message: string,
+	ErrorType: typeof Error | typeof TypeError = Error,
+) {
+	return new ErrorType(`${errorPrefix} ${message}`)
 }
 
 function parseLineHeight(value: string) {
