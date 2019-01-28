@@ -1,3 +1,7 @@
+## 3.0.4
+
+-  Add BundlePhobia badges to npm (requires version bump).
+
 ## 3.0.3
 
 -  Also exports a CommonJS module. Fixes `const parseCSSFont = require('parse-css-font');`.
